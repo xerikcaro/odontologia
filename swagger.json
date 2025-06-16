@@ -1,0 +1,545 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API de Odontología",
+    "description": "API para el sistema de gestión de pacientes, tratamientos y citas odontológicas.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:5000"
+    }
+  ],
+  "tags":[
+    {
+    "name": "Usuarios",
+    "description": "Acciones relacionadas con usuarios/pacientes"
+    },
+    {
+    "name": "Tratamientos",
+    "description": "Acciones relacionadas con tratamientos dentales"
+    },
+    {
+    "name": "Citas",
+    "description": "Acciones relacionadas con la gestión de citas"
+    }
+  ],
+  "paths": {
+    "/usuarios/login": {
+      "post": {
+        "tags":["Usuarios"],
+        "summary": "Iniciar sesión",
+        "description": "Este endpoint permite iniciar sesión en el sistema",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["correo", "contrasena"],
+                "properties": {
+                  "correo": { "type": "string", "format": "email" },
+                  "contrasena": { "type": "string" }
+                },
+                "example": {
+                  "correo": "usuario@example.com",
+                  "contrasena": "miContrasena"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login exitoso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "mensaje": { "type": "string" },
+                    "usuario": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "nombre": { "type": "string" }
+                      }
+                    }
+                  },
+                  "example": {
+                    "mensaje": "Login exitoso",
+                    "usuario": { "id": 1, "nombre": "Carlos" }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Credenciales incorrectas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "mensaje": { "type": "string" } }
+                },
+                "example": { "mensaje": "Credenciales incorrectas" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usuarios/listadoPacientes": {
+      "get": {
+        "tags": ["Usuarios"],
+        "summary": "Listar todos los pacientes",
+        "responses": {
+          "200": {
+            "description": "Lista de pacientes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "integer" },
+                      "nombre": { "type": "string" },
+                      "apellido": { "type": "string" },
+                      "cedula": { "type": "string" },
+                      "telefono": { "type": "string" },
+                      "correo": { "type": "string", "format": "email" },
+                      "direccion": { "type": "string" },
+                      "fecha_registro": { "type": "string", "format": "date" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usuarios/registroPaciente": {
+      "post": {
+        "tags": ["Usuarios"],
+        "summary": "Registrar un nuevo paciente",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["nombre", "apellido", "cedula", "telefono", "correo", "direccion", "fecha_registro", "contrasena"],
+                "properties": {
+                  "nombre": { "type": "string" },
+                  "apellido": { "type": "string" },
+                  "cedula": { "type": "string" },
+                  "telefono": { "type": "string" },
+                  "correo": { "type": "string", "format": "email" },
+                  "direccion": { "type": "string" },
+                  "fecha_registro": { "type": "string", "format": "date" },
+                  "contrasena": { "type": "string" }
+                },
+                "example": {
+                  "nombre": "Ana",
+                  "apellido": "Gómez",
+                  "cedula": "987654321",
+                  "telefono": "3001234567",
+                  "correo": "ana@example.com",
+                  "direccion": "Calle 123",
+                  "fecha_registro": "2025-06-09",
+                  "contrasena": "contraseña123"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paciente registrado con contraseña",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "mensaje": { "type": "string" } },
+                  "example": { "mensaje": "Paciente registrado con contraseña" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usuarios/editarPaciente/{id}": {
+      "put": {
+        "tags": ["Usuarios"],
+        "summary": "Editar datos de un paciente",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": { "type": "string" },
+                  "apellido": { "type": "string" },
+                  "telefono": { "type": "string" },
+                  "correo": { "type": "string", "format": "email" },
+                  "direccion": { "type": "string" }
+                },
+                "example": {
+                  "nombre": "Ana",
+                  "apellido": "Gómez",
+                  "telefono": "3000000000",
+                  "correo": "ana2@example.com",
+                  "direccion": "Nueva dirección"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Paciente actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "mensaje": { "type": "string" } },
+                  "example": { "mensaje": "Paciente actualizado" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/usuarios/eliminarPaciente/{id}": {
+      "delete": {
+        "tags": ["Usuarios"],
+        "summary": "Eliminar un paciente",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paciente eliminado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "mensaje": { "type": "string" } },
+                  "example": { "mensaje": "Paciente eliminado" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tratamientos/registroTratamiento": {
+      "post": {
+        "tags": ["Tratamientos"],
+        "summary": "Registrar un nuevo tratamiento",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["nombre", "descripcion", "categoria"],
+                "properties": {
+                  "nombre": { "type": "string" },
+                  "descripcion": { "type": "string" },
+                  "categoria": { "type": "string" }
+                },
+                "example": {
+                  "nombre": "Limpieza",
+                  "descripcion": "Limpieza dental completa",
+                  "categoria": "prevención"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tratamiento registrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "mensaje": { "type": "string" } },
+                  "example": { "mensaje": "Tratamiento registrado" }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Faltan campos requeridos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "error": { "type": "string" } },
+                  "example": { "error": "Faltan campos requeridos" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tratamientos/editarTratamiento/{id}": {
+      "put": {
+        "tags": ["Tratamientos"],
+        "summary": "Editar un tratamiento",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "nombre": { "type": "string" },
+                  "descripcion": { "type": "string" },
+                  "categoria": { "type": "string" }
+                },
+                "example": {
+                  "nombre": "Blanqueamiento",
+                  "descripcion": "Blanqueamiento dental",
+                  "categoria": "estética"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tratamiento actualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "mensaje": { "type": "string" } },
+                  "example": { "mensaje": "Tratamiento actualizado" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tratamientos/eliminarTratamiento/{id}": {
+      "delete": {
+        "tags": ["Tratamientos"],
+        "summary": "Eliminar un tratamiento",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tratamiento eliminado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "mensaje": { "type": "string" } },
+                  "example": { "mensaje": "Tratamiento eliminado" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tratamientos/listadoTratamientos": {
+      "get": {
+        "tags": ["Tratamientos"],
+        "summary": "Listar tratamientos",
+        "responses": {
+          "200": {
+            "description": "Listado de tratamientos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "integer" },
+                      "nombre": { "type": "string" },
+                      "descripcion": { "type": "string" },
+                      "categoria": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/citas/registroCita": {
+      "post": {
+        "tags": ["Citas"],
+        "summary": "Registrar una nueva cita",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["paciente_id", "fecha", "hora", "motivo", "observaciones"],
+                "properties": {
+                  "paciente_id": { "type": "integer" },
+                  "fecha": { "type": "string", "format": "date" },
+                  "hora": { "type": "string", "format": "time" },
+                  "motivo": { "type": "string" },
+                  "observaciones": { "type": "string" }
+                },
+                "example": {
+                  "paciente_id": 1,
+                  "fecha": "2025-06-09",
+                  "hora": "14:30:00",
+                  "motivo": "Revisión anual",
+                  "observaciones": "Todo bien"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cita registrada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "mensaje": { "type": "string" } },
+                  "example": { "mensaje": "Cita registrada" }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Faltan campos requeridos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "error": { "type": "string" } },
+                  "example": { "error": "Faltan campos requeridos" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/citas/editarCita/{id}": {
+      "put": {
+        "tags": ["Citas"],
+        "summary": "Editar una cita existente",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fecha": { "type": "string", "format": "date" },
+                  "hora": { "type": "string", "format": "time" },
+                  "motivo": { "type": "string" },
+                  "observaciones": { "type": "string" }
+                },
+                "example": {
+                  "fecha": "2025-06-10",
+                  "hora": "15:00:00",
+                  "motivo": "Odontograma",
+                  "observaciones": "Paciente con caries"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cita actualizada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "mensaje": { "type": "string" } },
+                  "example": { "mensaje": "Cita actualizada" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/citas/eliminarCita/{id}": {
+      "delete": {
+        "tags": ["Citas"],
+        "summary": "Eliminar una cita",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cita eliminada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "mensaje": { "type": "string" } },
+                  "example": { "mensaje": "Cita eliminada" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/citas/listadoCitas": {
+      "get": {
+        "tags": ["Citas"],
+        "summary": "Listar todas las citas",
+        "responses": {
+          "200": {
+            "description": "Listado de citas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "integer" },
+                      "fecha": { "type": "string", "format": "date" },
+                      "hora": { "type": "string", "format": "time" },
+                      "motivo": { "type": "string" },
+                      "observaciones": { "type": "string" },
+                      "paciente_id": { "type": "integer" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
